@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Integer, String
@@ -31,9 +31,18 @@ class Book(db.Model):
 with app.app_context():
     db.create_all()
 
+@app.route("/books", methods=['POST'])
+def add_book():
+    data = request.get_json()
+    new_book = Book(author = data["author"], genre = data["genre"], year = data["year"], title = data["title"])
+    db.session.add(new_book)
+    db.session.commit()
+    return jsonify({'message': 'Livro adicionado com sucesso!'}), 201
 @app.route('/')
 def hello_word():
     return "<p>Hello, World! Pablo fez o L</p>"
+
+      
 
 @app.route('/teste')
 def rota_teste():
